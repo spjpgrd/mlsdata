@@ -1,68 +1,9 @@
 import urllib2
 import re
+from team import Team
+from match import Match, MatchResult
 from bs4 import BeautifulSoup
 from dateutil.parser import parse
-
-class Team:
-    def __init__(self, name, website, yearsActive):
-        self.name = name
-        self.website = website
-        self.yearsActive = yearsActive
-        self.matches = []
-    def addMatch(self, match):
-        self.matches.append(match)
-    def team_record(self, season, type):
-        if season is None:
-            season = self.yearsActive[0]
-        winCount = 0
-        drawCount = 0
-        lossCount = 0
-        scheCount = 0
-        for match in self.matches:
-            if match.season == season:
-                if type is not None:
-                    if match.type == type:
-                        if "WIN" in match.result.type:
-                            winCount += 1
-                        elif "LOSS" in match.result.type:
-                            lossCount += 1
-                        elif "DRAW" in match.result.type:
-                            drawCount += 1
-                        else:
-                            scheCount += 1
-                else:
-                    if "WIN" in match.result.type:
-                        winCount += 1
-                    elif "LOSS" in match.result.type:
-                        lossCount += 1
-                    elif "DRAW" in match.result.type:
-                        drawCount += 1
-                    else:
-                        scheCount += 1
-        return "%i-%i-%i" % (winCount, drawCount, lossCount)
-
-class Match:
-    def __init__(self, location, date, type, opponent, homeOrAway, result):
-        self.location = location
-        self.date = date
-        self.season = date.year
-        self.type = type
-        self.opponent = opponent
-        self.homeOrAway = homeOrAway
-        self.result = result
-    def __repr__(self):
-        return "<Match season:%i opponent:%s result:%s>" % (self.season, self.opponent, self.result)
-    def __str__(self):
-        hoa = "@"
-        if self.homeOrAway == "H":
-            hoa = "vs"
-        return "%s Game: %s %s %s | %s" % (self.type, self.date, hoa, self.opponent, self.result)
-
-class MatchResult:
-    def __init__(self, winnerScore, loserScore, type):
-        self.winner_score = winnerScore
-        self.loser_score = loserScore
-        self.type = type
 
 def gather_facts(team):
     print 'Gathering facts for ' + team.name + '...'
